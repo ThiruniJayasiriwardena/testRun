@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
 type Op = "+" | "−" | "×" | "÷";
@@ -122,6 +122,32 @@ export default function Calculator() {
     const next = display.slice(0, -1);
     setDisplay(next === "" || next === "-" ? "0" : next);
   };
+
+  // Keyboard support (re-subscribed each render so handlers see fresh state)
+  useEffect(() => {
+    const opKeys: Record<string, Op> = {
+      "+": "+",
+      "-": "−",
+      "*": "×",
+      "/": "÷",
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (/^[0-9]$/.test(e.key)) digit(e.key);
+      else if (e.key === ".") dot();
+      else if (e.key in opKeys) {
+        e.preventDefault(); // avoid browser quick-find on "/"
+        chooseOp(opKeys[e.key]);
+      } else if (e.key === "%") percent();
+      else if (e.key === "Enter" || e.key === "=") {
+        e.preventDefault(); // don't also click a focused button
+        equals();
+      } else if (e.key === "Backspace") backspace();
+      else if (e.key === "Escape" || e.key === "Delete") reset();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
 
   const opBtn = (label: Op) => (
     <Btn
