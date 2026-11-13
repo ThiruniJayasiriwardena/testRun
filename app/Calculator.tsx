@@ -132,8 +132,9 @@ export default function Calculator() {
       "/": "÷",
     };
     const onKey = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
-      if (/^[0-9]$/.test(e.key)) digit(e.key);
       else if (e.key === ".") dot();
       else if (e.key in opKeys) {
         e.preventDefault(); // avoid browser quick-find on "/"
