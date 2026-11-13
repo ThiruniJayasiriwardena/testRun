@@ -147,7 +147,7 @@ export default function Calculator() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  });
+  }, []);
 
   const opBtn = (label: Op) => (
     <Btn
